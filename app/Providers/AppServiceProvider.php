@@ -30,9 +30,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // $this->app->bind(AuthInterface::class, AuthService::class);
-
-        //
         $this->app->singleton(ItemInterface::class, ItemService::class);
         $this->app->singleton(VendorInterface::class, VendorService::class);
         $this->app->singleton(OrderInterface::class, OrderService::class);
@@ -46,13 +43,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
-        });
-        // Tambahkan Security Scheme ke OpenAPI sebelum dirender agar UI (Try It)
-        // menampilkan field input untuk JWT bearer token.
+        // ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
+        //     return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+        // });
+
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi, OpenApiContext $context) {
-            // Tambahkan skema HTTP Bearer (JWT) bernama 'BearerAuth'
             $openApi->secure(
                 SecurityScheme::http('bearer', 'JWT')
                     ->as('BearerAuth')

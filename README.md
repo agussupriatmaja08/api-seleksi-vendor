@@ -1,61 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Project Test Backend Developer - Sadhana Corporation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ini adalah submisi untuk Proyek Tes Backend Developer di Sadhana Corporation. Proyek ini membangun API sederhana untuk studi kasus PT. Maju Karya, yang bertujuan membantu proses seleksi vendor melalui sistem pelaporan.
 
-## About Laravel
+## Tech Stack (Sesuai Rekomendasi)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   Bahasa: PHP 8.1+
+-   Framework: Laravel 10
+-   Database: MySQL (atau PostgreSQL)
+-   Otentikasi: JWT (menggunakan tymon/jwt-auth)
+-   Dokumentasi API: Scramble
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 1. Instalasi dan Setup
 
-## Learning Laravel
+Harap ikuti langkah-langkah ini untuk menjalankan proyek secara lokal.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### A. Persiapan Awal
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Clone Repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone [URL_GIT_ANDA]
+cd [NAMA_FOLDER_PROYEK]
+```
 
-## Laravel Sponsors
+Install Dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+Setup Environment
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Salin file `.env.example` dan buat file `.env` baru.
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Buat kunci aplikasi Laravel.
 
-## Code of Conduct
+```bash
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Buat kunci rahasia untuk JWT.
 
-## Security Vulnerabilities
+```bash
+php artisan jwt:secret
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### B. Setup Database
 
-## License
+Buka file `.env` Anda dan sesuaikan koneksi database (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD) agar sesuai dengan pengaturan lokal Anda.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Contoh konfigurasi lokal (MySQL):
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sadhana_test
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Jalankan Script Migration
+
+Perintah ini akan membuat semua tabel yang diperlukan (vendors, items, vendor_items, orders, users) sesuai dengan ERD yang disediakan.
+
+```bash
+php artisan migrate
+```
+
+Jalankan Database Seeder
+
+Perintah ini akan mengisi database dengan data dummy (termasuk akun pengguna di bawah) agar API dapat langsung diuji.
+
+```bash
+php artisan db:seed
+```
+
+### C. Jalankan Server
+
+```bash
+php artisan serve
+```
+
+Aplikasi sekarang berjalan di http://127.0.0.1:8000.
+
+---
+
+## 2. Akun Pengguna (User Login)
+
+Sesuai permintaan tes, berikut adalah kredensial pengguna yang dapat digunakan untuk mendapatkan Token JWT melalui endpoint `POST /api/login`:
+
+-   Email: `admin@example.com`
+-   Password: `password123`
+
+---
+
+## 3. Dokumentasi dan Pengujian API
+
+Seluruh dokumentasi API (termasuk endpoint CRUD dan 3 Laporan Utama) telah dibuat menggunakan Scramble.
+
+### A. Akses Dokumentasi
+
+Anda dapat mengakses dokumentasi API interaktif di:
+
+```
+http://127.0.0.1:8000/docs/api
+```
+
+### B. Cara Menggunakan Dokumentasi (Penting)
+
+1. Buka dokumentasi Scramble.
+2. Di kanan atas, klik tombol "Authorize".
+3. Salin `access_token` yang Anda dapatkan dari endpoint `POST /api/login` (menggunakan akun di atas).
+4. Tempelkan token di modal otorisasi (pastikan diawali dengan `Bearer `).
+5. Sekarang Anda dapat menguji semua endpoint yang dilindungi (`@authenticated`) langsung dari halaman dokumentasi.
+
+---
+
+## 4. Catatan Desain dan "Poin Plus"
+
+Beberapa keputusan desain dan implementasi "poin plus" (sesuai permintaan tes) telah diterapkan:
+
+-   **Validasi Input**: Seluruh input (Store dan Update) ditangani secara ketat menggunakan Form Request Classes (misal: `StoreVendorRequest`, `UpdateOrderRequest`).
+
+-   **Arsitektur Service Layer**: Semua logika bisnis (CRUD dan Laporan) dipisahkan dari Controller dan ditempatkan di Service Layer (misal: `ItemService`, `ReportService`).
+
+-   **Dependency Injection & Interface**: Controller di-inject dengan Interface (misal: `ItemInterface`) yang di-bind ke Service (misal: `ItemService`) di `AppServiceProvider` untuk loose coupling.
+
+-   **Base ApiController**: Dibuat `ApiController` kustom yang berisi helper `sendResponse()` untuk menstandardisasi semua output JSON API, membuat controller lain tetap bersih dan ringkas.
+
+---
+
+Jika Anda butuh bantuan tambahan (menjalankan proyek, memodifikasi data dummy, atau menambahkan dokumentasi contoh), beri tahu saya dan saya akan bantu.
+
+Terima kasih.

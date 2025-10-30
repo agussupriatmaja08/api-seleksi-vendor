@@ -9,19 +9,70 @@
             "url": "http://localhost:8000/api"
         }
     ],
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
     "paths": {
-        "/user": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "`User`",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
+        "/updateAkun/{user}": {
+            "post": {
+                "operationId": "auth.updateAkun",
+                "description": "Memperbarui nama, email, atau password pengguna yang sedang login.\nPengguna hanya dapat memperbarui data mereka sendiri (Otorisasi dicek).",
+                "summary": "Update Akun Pengguna (Profil Saya)",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 50
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
                                 }
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -32,6 +83,8 @@
         "/login": {
             "post": {
                 "operationId": "auth.login",
+                "description": "Mengotentikasi pengguna berdasarkan email dan password,\nlalu mengembalikan JWT (Bearer Token) jika berhasil.",
+                "summary": "Login Pengguna",
                 "tags": [
                     "Auth"
                 ],
@@ -63,46 +116,67 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string"
-                                        },
-                                        "token_type": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Bearer"
-                                            ]
-                                        },
-                                        "expires_in": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "access_token",
-                                        "token_type",
-                                        "expires_in"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
                                     ]
                                 }
                             }
                         }
                     },
-                    "401": {
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "operationId": "auth.register",
+                "description": "Membuat akun pengguna baru.",
+                "summary": "Registrasi Pengguna Baru",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 50
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Unauthorized"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "error"
+                                    "type": "integer",
+                                    "enum": [
+                                        201
                                     ]
                                 }
                             }
@@ -117,6 +191,7 @@
         "/items": {
             "get": {
                 "operationId": "items.index",
+                "summary": "Menampilkan semua data item\n* Mengambil daftar semua item yang terdaftar di sistem",
                 "tags": [
                     "Item"
                 ],
@@ -126,7 +201,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -138,6 +216,7 @@
             },
             "post": {
                 "operationId": "items.store",
+                "summary": "Membuat data item baru\n* Menyimpan item baru ke database",
                 "tags": [
                     "Item"
                 ],
@@ -152,12 +231,15 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        201
+                                    ]
                                 }
                             }
                         }
@@ -174,6 +256,7 @@
         "/items/{id}": {
             "get": {
                 "operationId": "items.show",
+                "summary": "Menampilkan detail item\n* Mengambil data satu item berdasarkan ID",
                 "tags": [
                     "Item"
                 ],
@@ -188,33 +271,15 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -226,6 +291,7 @@
             },
             "put": {
                 "operationId": "items.update",
+                "summary": "Memperbarui data item\n* Memperbarui data item yang ada berdasarkan ID",
                 "tags": [
                     "Item"
                 ],
@@ -250,33 +316,15 @@
                     }
                 },
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -291,6 +339,7 @@
             },
             "delete": {
                 "operationId": "items.destroy",
+                "summary": "Menghapus data item\n* Menghapus data item berdasarkan ID",
                 "tags": [
                     "Item"
                 ],
@@ -305,43 +354,14 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Item deleted successfully"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
                                     ]
                                 }
                             }
@@ -356,6 +376,7 @@
         "/orders": {
             "get": {
                 "operationId": "orders.index",
+                "summary": "Menampilkan semua data order\n* Mengambil daftar semua transaksi order yang terdaftar",
                 "tags": [
                     "Order"
                 ],
@@ -377,6 +398,7 @@
             },
             "post": {
                 "operationId": "orders.store",
+                "summary": "Membuat data order baru\n* Menyimpan transaksi order baru.\n* (Validasi `id_item` vs `id_vendor` ditangani di `StoreOrderRequest`)",
                 "tags": [
                     "Order"
                 ],
@@ -391,7 +413,7 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
@@ -413,6 +435,7 @@
         "/orders/{id}": {
             "get": {
                 "operationId": "orders.show",
+                "summary": "Menampilkan detail order\n* Mengambil data satu order berdasarkan ID",
                 "tags": [
                     "Order"
                 ],
@@ -427,27 +450,6 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Order not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
@@ -465,6 +467,7 @@
             },
             "put": {
                 "operationId": "orders.update",
+                "summary": "Memperbarui data order\n* Memperbarui data order yang ada berdasarkan ID",
                 "tags": [
                     "Order"
                 ],
@@ -489,27 +492,6 @@
                     }
                 },
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Order not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
@@ -530,6 +512,7 @@
             },
             "delete": {
                 "operationId": "orders.destroy",
+                "summary": "Menghapus data order\n* Menghapus data order berdasarkan ID",
                 "tags": [
                     "Order"
                 ],
@@ -544,44 +527,12 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Order not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Order deleted successfully"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
+                                    "type": "string"
                                 }
                             }
                         }
@@ -605,26 +556,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "data ditemukan"
-                                            ]
-                                        },
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "status",
-                                        "message",
-                                        "data"
-                                    ]
+                                    "type": "string"
                                 }
                             }
                         }
@@ -638,7 +570,7 @@
         "/reports/most-transacted": {
             "get": {
                 "operationId": "report.getMostTransactedReport",
-                "summary": "Report 1: Item per Vendor",
+                "summary": "Report 2: Rank vendor dengan transaksi paling banyak",
                 "tags": [
                     "Report"
                 ],
@@ -648,26 +580,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "data ditemukan"
-                                            ]
-                                        },
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "status",
-                                        "message",
-                                        "data"
-                                    ]
+                                    "type": "string"
                                 }
                             }
                         }
@@ -681,7 +594,7 @@
         "/reports/rate-report": {
             "get": {
                 "operationId": "report.getRateReport",
-                "summary": "Report 1: Item per Vendor",
+                "summary": "Report 3: Rate up/down harga dari item",
                 "tags": [
                     "Report"
                 ],
@@ -691,26 +604,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "data ditemukan"
-                                            ]
-                                        },
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "status",
-                                        "message",
-                                        "data"
-                                    ]
+                                    "type": "string"
                                 }
                             }
                         }
@@ -724,6 +618,7 @@
         "/vendors": {
             "get": {
                 "operationId": "vendors.index",
+                "summary": "Menampilkan semua data vendor\n* Mengambil daftar semua vendor (pemasok) yang terdaftar",
                 "tags": [
                     "Vendor"
                 ],
@@ -733,7 +628,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -745,6 +643,7 @@
             },
             "post": {
                 "operationId": "vendors.store",
+                "summary": "Membuat data vendor baru\n* Menyimpan data vendor (pemasok) baru",
                 "tags": [
                     "Vendor"
                 ],
@@ -753,18 +652,21 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/StoreOrderRequest"
+                                "$ref": "#/components/schemas/StoreVendorRequest"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        201
+                                    ]
                                 }
                             }
                         }
@@ -781,6 +683,7 @@
         "/vendors/{id}": {
             "get": {
                 "operationId": "vendors.show",
+                "summary": "Menampilkan detail vendor\n* Mengambil data satu vendor berdasarkan ID",
                 "tags": [
                     "Vendor"
                 ],
@@ -795,33 +698,15 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -833,6 +718,7 @@
             },
             "put": {
                 "operationId": "vendors.update",
+                "summary": "Memperbarui data vendor\n* Memperbarui data vendor yang ada berdasarkan ID",
                 "tags": [
                     "Vendor"
                 ],
@@ -857,33 +743,15 @@
                     }
                 },
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -898,6 +766,7 @@
             },
             "delete": {
                 "operationId": "vendors.destroy",
+                "summary": "Menghapus data vendor\n* Menghapus data vendor berdasarkan ID",
                 "tags": [
                     "Vendor"
                 ],
@@ -912,43 +781,14 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor deleted successfully"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
                                     ]
                                 }
                             }
@@ -963,6 +803,7 @@
         "/vendor-items": {
             "get": {
                 "operationId": "vendor-items.index",
+                "summary": "Menampilkan semua relasi harga vendor-item\n* Mengambil daftar semua penawaran item dan harganya",
                 "tags": [
                     "VendorItem"
                 ],
@@ -972,7 +813,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -984,6 +828,7 @@
             },
             "post": {
                 "operationId": "vendor-items.store",
+                "summary": "Membuat relasi harga vendor-item baru\n* Mendaftarkan item ke vendor beserta harga awalnya",
                 "tags": [
                     "VendorItem"
                 ],
@@ -998,12 +843,15 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        201
+                                    ]
                                 }
                             }
                         }
@@ -1020,6 +868,7 @@
         "/vendor-items/{id}": {
             "get": {
                 "operationId": "vendor-items.show",
+                "summary": "Menampilkan detail relasi harga\n* Mengambil detail satu penawaran (harga) berdasarkan ID relasi",
                 "tags": [
                     "VendorItem"
                 ],
@@ -1034,33 +883,15 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -1072,6 +903,7 @@
             },
             "put": {
                 "operationId": "vendor-items.update",
+                "summary": "Memperbarui relasi harga vendor-item\n* Endpoint kunci untuk memperbarui harga (harga_sebelum & harga_sekarang)",
                 "tags": [
                     "VendorItem"
                 ],
@@ -1096,33 +928,15 @@
                     }
                 },
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
+                                    ]
                                 }
                             }
                         }
@@ -1137,6 +951,7 @@
             },
             "delete": {
                 "operationId": "vendor-items.destroy",
+                "summary": "Menghapus relasi harga vendor-item\n* Menghapus penawaran item dari vendor",
                 "tags": [
                     "VendorItem"
                 ],
@@ -1151,43 +966,14 @@
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor Item not found"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
                     "200": {
                         "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Vendor Item deleted successfully"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
+                                    "type": "integer",
+                                    "enum": [
+                                        200
                                     ]
                                 }
                             }
@@ -1201,6 +987,14 @@
         }
     },
     "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "description": "JWT Bearer token authentication",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
         "schemas": {
             "StoreItemRequest": {
                 "type": "object",
@@ -1208,14 +1002,14 @@
                     "kode_item": {
                         "type": "string"
                     },
-                    "name_item": {
+                    "nama_item": {
                         "type": "string",
                         "maxLength": 255
                     }
                 },
                 "required": [
                     "kode_item",
-                    "name_item"
+                    "nama_item"
                 ],
                 "title": "StoreItemRequest"
             },
@@ -1270,20 +1064,37 @@
                 ],
                 "title": "StoreVendorItemRequest"
             },
+            "StoreVendorRequest": {
+                "type": "object",
+                "properties": {
+                    "kode_vendor": {
+                        "type": "string"
+                    },
+                    "nama_vendor": {
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "kode_vendor",
+                    "nama_vendor"
+                ],
+                "title": "StoreVendorRequest"
+            },
             "UpdateItemRequest": {
                 "type": "object",
                 "properties": {
                     "kode_item": {
                         "type": "string"
                     },
-                    "name_item": {
+                    "nama_item": {
                         "type": "string",
                         "maxLength": 255
                     }
                 },
                 "required": [
                     "kode_item",
-                    "name_item"
+                    "nama_item"
                 ],
                 "title": "UpdateItemRequest"
             },
@@ -1342,62 +1153,19 @@
                 "type": "object",
                 "properties": {
                     "kode_vendor": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 255
                     },
-                    "name_vendor": {
+                    "nama_vendor": {
                         "type": "string",
                         "maxLength": 255
                     }
                 },
                 "required": [
                     "kode_vendor",
-                    "name_vendor"
+                    "nama_vendor"
                 ],
                 "title": "UpdateVendorRequest"
-            },
-            "User": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "email_verified_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "created_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": [
-                            "string",
-                            "null"
-                        ],
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "id",
-                    "name",
-                    "email",
-                    "email_verified_at",
-                    "created_at",
-                    "updated_at"
-                ],
-                "title": "User"
             }
         },
         "responses": {
