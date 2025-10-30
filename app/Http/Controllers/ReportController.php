@@ -4,8 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\Contracts\ReportInterface;
+use App\Http\Controllers\Response\ApiController;
 
-class ReportController extends Controller
+
+
+/**
+ * @group Report
+ *
+ * API untuk mengambil data laporan.
+ */
+class ReportController extends ApiController
 {
 
     protected $reportService;
@@ -21,14 +29,7 @@ class ReportController extends Controller
     public function getItemVendorReport()
     {
         $reportData = $this->reportService->getReportItemVendor();
-
-        $response = [
-            "status" => true,
-            "message" => "data ditemukan",
-            "data" => $reportData
-        ];
-
-        return response()->json($response);
+        return $this->sendResponse($reportData);
     }
 
     /**
@@ -38,14 +39,7 @@ class ReportController extends Controller
     public function getMostTransactedReport()
     {
         $reportData = $this->reportService->getMostTransacted();
-
-        $response = [
-            "status" => true,
-            "message" => "data ditemukan",
-            "data" => $reportData
-        ];
-
-        return response()->json($response);
+        return $this->sendResponse($reportData);
     }
 
     /**
@@ -55,13 +49,7 @@ class ReportController extends Controller
     public function getRateReport()
     {
         $reportData = $this->reportService->getRateReport();
+        return $this->sendResponse($reportData);
 
-        $response = [
-            "status" => true,
-            "message" => "data ditemukan",
-            "data" => $reportData
-        ];
-
-        return response()->json($response);
     }
 }

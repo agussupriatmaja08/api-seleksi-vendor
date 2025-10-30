@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 use App\Models\Vendor;
+use App\Helpers\ServiceResponse;
+
 use App\Services\Contracts\ReportInterface;
 class ReportService implements ReportInterface
 {
@@ -28,8 +30,7 @@ class ReportService implements ReportInterface
                 "item" => $itemsData
             ];
         });
-
-        return $data->toArray();
+        return ServiceResponse::success($data->toArray(), 'Data ditemukan', 200);
     }
 
     public function getMostTransacted()
@@ -48,7 +49,7 @@ class ReportService implements ReportInterface
             ];
         });
 
-        return $data->toArray();
+        return ServiceResponse::success($data->toArray(), 'Data ditemukan', 200);
     }
 
     public function getRateReport()
@@ -97,6 +98,7 @@ class ReportService implements ReportInterface
                 "item" => $itemsDatas
             ];
         });
-        return $data->toArray();
+        return ServiceResponse::success($data->toArray(), 'Data ditemukan', 200);
+
     }
 }

@@ -6,8 +6,15 @@ use Illuminate\Http\Request;
 use App\Services\Contracts\OrderInterface;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Controllers\Response\ApiController;
 
-class OrderController extends Controller
+
+/**
+ * @group Order
+ *
+ * API untuk mengelola data Order (Transaksi Pemesanan).
+ */
+class OrderController extends ApiController
 {
     //
     protected $orderService;
@@ -16,51 +23,71 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
+    /**
+     * Menampilkan semua data order
+     * * Mengambil daftar semua transaksi order yang terdaftar.
+     *
+     * @authenticated
+     */
     public function index()
     {
         $orders = $this->orderService->showOrders();
-        return response()->json([
-            'success' => $orders->success,
-            'message' => $orders->message,
-            'data' => $orders->data,
-        ], $orders->status);
+
+        return $this->sendResponse($orders);
     }
+
+    /**
+     * Menampilkan detail order
+     * * Mengambil data satu order berdasarkan ID.
+     *
+     * @authenticated
+     * @urlParam id required ID dari order. Example: 1
+     */
     public function show($id)
     {
         $order = $this->orderService->showOrderById($id);
-
-        return response()->json([
-            'success' => $order->success,
-            'message' => $order->message,
-            'data' => $order->data,
-        ], $order->status);
+        return $this->sendResponse($order);
     }
+
+    /**
+     * Membuat data order baru
+     * * Menyimpan transaksi order baru.
+     * * (Validasi `id_item` vs `id_vendor` ditangani di `StoreOrderRequest`).
+     *
+     * @authenticated
+     */
     public function store(StoreOrderRequest $request)
     {
         $order = $this->orderService->createOrder($request->validated());
-        return response()->json([
-            'success' => $order->success,
-            'message' => $order->message,
-            'data' => $order->data,
-        ], $order->status);
+        return $this->sendResponse($order);
+
     }
 
+    /**
+     * Memperbarui data order
+     * * Memperbarui data order yang ada berdasarkan ID.
+     *
+     * @authenticated
+     * @urlParam id required ID dari order. Example: 1
+     */
     public function update(UpdateOrderRequest $request, $id)
     {
         $order = $this->orderService->updateOrder($id, $request->validated());
-        return response()->json([
-            'success' => $order->success,
-            'message' => $order->message,
-            'data' => $order->data,
-        ], $order->status);
+        return $this->sendResponse($order);
+
     }
+
+    /**
+     * Menghapus data order
+     * * Menghapus data order berdasarkan ID.
+     *
+     * @authenticated
+     * @urlParam id required ID dari order. Example: 1
+     */
     public function destroy($id)
     {
         $order = $this->orderService->deleteOrder($id);
-        return response()->json([
-            'success' => $order->success,
-            'message' => $order->message,
-            'data' => $order->data,
-        ], $order->status);
+        return $this->sendResponse($order);
+
     }
 }

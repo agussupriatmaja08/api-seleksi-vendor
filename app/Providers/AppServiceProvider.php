@@ -8,11 +8,13 @@ use App\Services\ItemService;
 use App\Services\VendorService;
 use App\Services\OrderService;
 use App\Services\VendorItemService;
+use App\Services\AuthService;
 
 use App\Services\Contracts\ItemInterface;
 use App\Services\Contracts\VendorInterface;
 use App\Services\Contracts\OrderInterface;
 use App\Services\Contracts\VendorItemInterface;
+use App\Services\Contracts\AuthInterface;
 
 use App\Services\Contracts\ReportInterface;
 use App\Services\ReportService;
@@ -28,12 +30,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // $this->app->bind(AuthInterface::class, AuthService::class);
+
         //
         $this->app->singleton(ItemInterface::class, ItemService::class);
         $this->app->singleton(VendorInterface::class, VendorService::class);
         $this->app->singleton(OrderInterface::class, OrderService::class);
         $this->app->singleton(VendorItemInterface::class, VendorItemService::class);
         $this->app->singleton(ReportInterface::class, ReportService::class);
+        $this->app->singleton(AuthInterface::class, AuthService::class);
     }
 
     /**
