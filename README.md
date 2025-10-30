@@ -97,13 +97,15 @@ Berikut adalah kredensial pengguna yang dapat digunakan untuk mendapatkan Token 
 
 Seluruh dokumentasi API (termasuk endpoint CRUD dan 3 Laporan Utama) telah dibuat menggunakan Scramble dan Postman.
 
-### A. Akses Dokumentasi
+### A. Akses Dokumentasi Scramble
 
 Anda dapat mengakses dokumentasi API interaktif (Scramble) di:
 
 ```
 http://127.0.0.1:8000/docs/api
 ```
+
+### B. Akses Dokumentasi Postman
 
 Atau anda juga dapat mengakses dokumentasi API lewat Postman :
 
