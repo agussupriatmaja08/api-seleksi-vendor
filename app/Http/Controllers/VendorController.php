@@ -11,11 +11,10 @@ use App\Http\Controllers\Response\ApiController;
 /**
  * @group Vendor
  *
- * API untuk mengelola data master Vendor (Pemasok).
+ * API untuk mengelola data Vendor (Pemasok).
  */
 class VendorController extends ApiController
 {
-    //
     protected $vendorService;
     public function __construct(VendorInterface $vendorService)
     {
@@ -23,15 +22,18 @@ class VendorController extends ApiController
     }
 
     /**
-     * Menampilkan semua data vendor
-     * * Mengambil daftar semua vendor (pemasok) yang terdaftar.
+     * Get Semua Vendor
      *
      * @authenticated
      * @response 200 {
      *  "success": true,
-     *  "message": "Daftar vendor berhasil diambil",
+     *  "message": "Data ditemukan",
      *  "data": [
-     *    {"id_vendor":1,"kode_vendor":"VND0001","name_vendor":"PT Vendor Satu","created_at":"2025-10-30T00:00:00.000000Z","updated_at":"2025-10-30T00:00:00.000000Z"}
+     *    {
+     *      "id_vendor": 1,
+     *      "kode_vendor": "VND0001",
+     *      "nama_vendor": "PT ABC"
+     *    }
      *  ]
      * }
      */
@@ -42,20 +44,10 @@ class VendorController extends ApiController
     }
 
     /**
-     * Menampilkan detail vendor
-     * * Mengambil data satu vendor berdasarkan ID.
+     * Get Detail Vendor
      *
      * @authenticated
      * @urlParam id required ID dari vendor. Example: 1
-     * @response 200 {
-     *  "success": true,
-     *  "message": "Detail vendor diperoleh",
-     *  "data": {"id_vendor":1,"kode_vendor":"VND0001","name_vendor":"PT Vendor Satu"}
-     * }
-     * @response 404 {
-     *  "success": false,
-     *  "message": "Vendor tidak ditemukan"
-     * }
      */
     public function show($id)
     {
@@ -64,8 +56,7 @@ class VendorController extends ApiController
     }
 
     /**
-     * Membuat data vendor baru
-     * * Menyimpan data vendor (pemasok) baru.
+     * Buat data vendor 
      *
      * @authenticated
      * @response 201 {
@@ -81,9 +72,8 @@ class VendorController extends ApiController
     }
 
     /**
-     * Memperbarui data vendor
-     * * Memperbarui data vendor yang ada berdasarkan ID.
-     *
+     * Update data vendor
+
      * @authenticated
      * @urlParam id required ID dari vendor. Example: 1
      * @response 200 {
@@ -103,8 +93,7 @@ class VendorController extends ApiController
     }
 
     /**
-     * Menghapus data vendor
-     * * Menghapus data vendor berdasarkan ID.
+     * Hapus data vendor
      *
      * @authenticated
      * @urlParam id required ID dari vendor. Example: 1

@@ -16,7 +16,6 @@ class VendorItem extends Model
         'harga_sekarang',
         'id_item',
         'id_vendor',
-        'id_item'
     ];
 
     public function vendor()

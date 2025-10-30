@@ -11,11 +11,10 @@ use App\Http\Controllers\Response\ApiController;
 /**
  * @group Report
  *
- * API untuk mengambil data laporan.
+ * API untuk mengelola Laporan.
  */
 class ReportController extends ApiController
 {
-
     protected $reportService;
     public function __construct(ReportInterface $reportService)
     {
@@ -23,7 +22,8 @@ class ReportController extends ApiController
     }
 
     /**
-     * Report 1: Item per Vendor
+     * Get Report Item per Vendor
+     *
      * @authenticated 
      */
     public function getItemVendorReport()
@@ -33,7 +33,8 @@ class ReportController extends ApiController
     }
 
     /**
-     * Report 2: Rank vendor dengan transaksi paling banyak
+     * Get Report Ranking Vendor
+     * 
      * @authenticated 
      */
     public function getMostTransactedReport()
@@ -43,7 +44,8 @@ class ReportController extends ApiController
     }
 
     /**
-     * Report 3: Rate up/down harga dari item
+     * Get Report Rate Harga
+     *
      * @authenticated 
      */
     public function getRateReport()

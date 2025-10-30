@@ -12,7 +12,7 @@ class VendorFactory extends Factory
     {
         return [
             'kode_vendor' => $this->faker->unique()->regexify('VND[0-9]{4}'),
-            'nama_item' => $this->faker->company,
+            'nama_vendor' => $this->faker->company,
         ];
     }
 }

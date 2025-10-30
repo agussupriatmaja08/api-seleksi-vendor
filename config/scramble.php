@@ -6,6 +6,10 @@ return [
     'api_path' => 'api',
     'api_domain' => null,
     'export_path' => 'api.json',
+    'responses' => [
+        // Tambahkan ini untuk menampilkan semua response codes
+        'should_exclude_empty' => false,
+    ],
 
     'info' => [
         'version' => env('API_VERSION', '0.0.1'),
@@ -13,7 +17,6 @@ return [
     ],
 
     'ui' => [
-        // ... (semua konfigurasi UI Anda tetap sama) ...
         'title' => null,
         'theme' => 'light',
         'hide_try_it' => false,
@@ -28,12 +31,10 @@ return [
     'enum_cases_names_strategy' => false,
     'flatten_deep_query_parameters' => true,
 
-    // -----------------------------------------------------------------
-    // [PERBAIKAN 1] TAMBAHKAN BLOK 'security' INI
-    // -----------------------------------------------------------------
+
     'security' => [
         'schemes' => [
-            'BearerAuth' => [ // Beri nama skema Anda
+            'BearerAuth' => [
                 'type' => 'http',
                 'scheme' => 'bearer',
                 'bearerFormat' => 'JWT',
@@ -42,9 +43,7 @@ return [
         ],
     ],
 
-    // -----------------------------------------------------------------
-    // [PERBAIKAN 2] KEMBALIKAN BLOK 'middleware' KE ASLINYA
-    // -----------------------------------------------------------------
+
     'middleware' => [
         'web',
         RestrictedDocsAccess::class,
@@ -52,5 +51,7 @@ return [
 
     'extensions' => [],
 
-    // (Pastikan tidak ada 'security_schemes' lain di bagian bawah file)
+
+
+
 ];

@@ -12,11 +12,10 @@ use App\Http\Controllers\Response\ApiController;
 /**
  * @group Item
  *
- * API untuk mengelola data master Item (Produk).
+ * API untuk mengelola data Item (Produk).
  */
 class ItemController extends ApiController
 {
-    //
     protected $itemService;
     public function __construct(ItemInterface $itemService)
     {
@@ -24,20 +23,19 @@ class ItemController extends ApiController
     }
 
     /**
-     * Menampilkan semua data item
-     * * Mengambil daftar semua item yang terdaftar di sistem.
+     * Get Semua Item
      *
      * @authenticated
      * @response 200 {
      *  "success": true,
-     *  "message": "Daftar item berhasil diambil",
+     *  "message": "Data ditemukan",
      *  "data": [
-     *    {"id_item":1,"kode_item":"ITM0001","name_item":"Produk A","created_at":"2025-10-30T00:00:00.000000Z","updated_at":"2025-10-30T00:00:00.000000Z"}
+     *    {
+     *      "id_item": 1,
+     *      "kode_item": "ITM0001",
+     *      "nama_item": "Buku Tulis"
+     *    }
      *  ]
-     * }
-     * @response 401 {
-     *  "success": false,
-     *  "message": "Unauthorized"
      * }
      */
     public function index()
@@ -47,21 +45,10 @@ class ItemController extends ApiController
     }
 
     /**
-     * Menampilkan detail item
-     * * Mengambil data satu item berdasarkan ID.
+     * Get Detail Item
      *
      * @authenticated
      * @urlParam id required ID dari item. Example: 1
-     * @response 200 {
-     *  "success": true,
-     *  "message": "Detail item diperoleh",
-     *  "data": {"id_item":1,"kode_item":"ITM0001","name_item":"Produk A","created_at":"2025-10-30T00:00:00.000000Z","updated_at":"2025-10-30T00:00:00.000000Z"}
-     * }
-     * @response 404 {
-     *  "success": false,
-     *  "message": "Item tidak ditemukan",
-     *  "data": null
-     * }
      */
     public function show($id)
     {
@@ -70,8 +57,7 @@ class ItemController extends ApiController
     }
 
     /**
-     * Membuat data item baru
-     * * Menyimpan item baru ke database.
+     * Buat data item 
      *
      * @authenticated
      * @response 201 {
@@ -92,8 +78,7 @@ class ItemController extends ApiController
     }
 
     /**
-     * Memperbarui data item
-     * * Memperbarui data item yang ada berdasarkan ID.
+     * Update data item
      *
      * @authenticated
      * @urlParam id required ID dari item. Example: 1
@@ -114,8 +99,7 @@ class ItemController extends ApiController
     }
 
     /**
-     * Menghapus data item
-     * * Menghapus data item berdasarkan ID.
+     * Hapus data item
      *
      * @authenticated
      * @urlParam id required ID dari item. Example: 1

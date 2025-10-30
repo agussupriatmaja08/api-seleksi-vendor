@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+// [FIX] Import ApiController dan ServiceResponse
+use App\Http\Controllers\Response\ApiController;
+use App\Helpers\ServiceResponse;
+
 use Illuminate\Http\Request;
 use Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
-use App\Helpers\ServiceResponse;
 use App\Services\Contracts\AuthInterface;
 
 /**
@@ -17,7 +19,7 @@ use App\Services\Contracts\AuthInterface;
  *
  * API untuk registrasi, login, dan update akun pengguna.
  */
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     protected $authService;
 
@@ -28,7 +30,7 @@ class AuthController extends Controller
 
 
     /**
-     * Login Pengguna
+     * Login User
      *
      * Mengotentikasi pengguna berdasarkan email dan password,
      * lalu mengembalikan JWT (Bearer Token) jika berhasil.
@@ -37,55 +39,65 @@ class AuthController extends Controller
      * @bodyParam password string required Kata sandi pengguna. Example: 12345678
      *
      * @response 200 {
-     * "success": true,
-     * "data": {
-     * "access_token": "ey...[jwt]...",
-     * "token_type": "Bearer",
-     * "expires_in": 3600
-     * },
-     * "message": "Login berhasil"
+     *     "success": true,
+     *     "data": {
+     *         "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+     *         "token_type": "Bearer",
+     *         "expires_in": 3600
+     *     },
+     *     "message": "Login berhasil"
      * }
      * @response 401 {
-     * "success": false,
-     * "message": "Unauthorized. Email atau password salah."
+     *     "success": false,
+     *     "message": "Unauthorized. Email atau password salah."
      * }
      * @response 422 {
-     * "success": false,
-     * "message": "Data validasi tidak valid.",
-     * "errors": {
-     * "email": [
-     * "The email field is required."
-     * ]
+     *     "success": false,
+     *     "message": "Data validasi tidak valid.",
+     *     "errors": {
+     *         "email": [
+     *             "The email field is required."
+     *         ]
+     *     }
      * }
+     * @response 500 {
+     *     "success": false,
+     *     "message": "Gagal membuat token."
      * }
      */
     public function login(Request $request)
     {
         try {
-            $request->validate([
+            $credentials = $request->validate([ // Validasi bisa melempar exception
                 'email' => 'required',
                 'password' => 'required',
             ]);
-            $data = $this->authService->login($request);
 
-            return response()->json($data);
+            // [FIX] Panggil service, yang akan mengembalikan ServiceResponse
+            $result = $this->authService->login($request);
+
+            // [FIX] Gunakan sendResponse dari ApiController
+            return $this->sendResponse($result);
+
         } catch (ValidationException $e) {
-            return response()->json('Data validasi tidak valid.', 422, $e->errors());
+            // [FIX] Gunakan ServiceResponse dan sendResponse untuk error
+            $errorResponse = ServiceResponse::error('Data validasi tidak valid.', 422, $e->errors());
+            return $this->sendResponse($errorResponse);
+
         } catch (JWTException $e) {
-            return response()->json('Gagal membuat token.', 500);
+            $errorResponse = ServiceResponse::error('Gagal membuat token.', 500);
+            return $this->sendResponse($errorResponse);
+
         } catch (Exception $e) {
-            return response()->json('Terjadi kesalahan: ' . $e->getMessage(), 500);
+            $errorResponse = ServiceResponse::error('Terjadi kesalahan: ' . $e->getMessage(), 500);
+            return $this->sendResponse($errorResponse);
         }
     }
 
     /**
-     * Registrasi Pengguna Baru
+     * Registrasi User
      *
-     * Membuat akun pengguna baru.
-     *
-     * @bodyParam name string required Nama lengkap pengguna. Example: admin
-     * @bodyParam email string required Alamat email pengguna (harus unik). Example: user@gmail.com
-     * @bodyParam password string required Kata sandi (minimal 8 karakter). Example: 12345678
+     * ... (docblock) ...
      *
      * @response 201 {
      * "success": true,
@@ -104,72 +116,56 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        // [NOTE] Handler.php akan menangani ValidationException secara otomatis
         $validated = $request->validate([
             'name' => 'required|max:50|min:1',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8'
         ]);
-        $data = $this->authService->register($validated);
 
-        return response()->json($data);
-
-
+        // [FIX] Gunakan sendResponse
+        return $this->sendResponse(
+            $this->authService->register($validated)
+        );
     }
 
     /**
-     * Update Akun Pengguna (Profil Saya)
+     * Update Akun User Pribadi
      *
-     * Memperbarui nama, email, atau password pengguna yang sedang login.
-     * Pengguna hanya dapat memperbarui data mereka sendiri (Otorisasi dicek).
-     *
-     * @authenticated
-     * @urlParam user required ID dari pengguna yang akan di-update (harus ID sendiri). Example: 1
-     * @bodyParam name string Nama baru pengguna (opsional). Example: John Smith
-     * @bodyParam email string Email baru pengguna (opsional). Example: john.smith@example.com
-     * @bodyParam password string Password baru (opsional, min 8 karakter). Example: newPassword123
+     * ... (docblock) ...
      *
      * @response 200 {
      * "success": true,
      * "message": "Akun berhasil diperbarui",
-     * "data": {
-     * "id": 1,
-     * "name": "John Smith",
-     * "email": "john.smith@example.com",
-     * "email_verified_at": null,
-     * "created_at": "2025-10-30T06:00:00.000000Z",
-     * "updated_at": "2025-10-30T06:30:00.000000Z"
-     * }
+     * "data": { ... }
      * }
      * @response 403 {
      * "success": false,
      * "message": "Akses Ditolak (Forbidden). Anda hanya dapat memperbarui akun Anda sendiri."
      * }
-     * @response 422 {
-     * "success": false,
-     * "message": "Data validasi tidak valid.",
-     * "errors": {
-     * "password": [
-     * "The password must be at least 8 characters."
-     * ]
-     * }
-     * }
      */
     public function updateAkun(Request $request)
     {
+        // [NOTE] Handler.php akan menangani ValidationException secara otomatis
+
         $targetUserId = $request->route('user');
         $authenticatedUser = $request->user();
+
         if ($authenticatedUser->id != $targetUserId) {
-            $error = ServiceResponse::error('Akses Ditolak (Forbidden). Anda hanya dapat memperbarui akun Anda sendiri.');
-            return response()->json($error, 403);
+            return $this->sendResponse(
+                ServiceResponse::error('Akses Ditolak (Forbidden). Anda hanya dapat memperbarui akun Anda sendiri.', 403)
+            );
         }
+
         $validated = $request->validate([
             'name' => 'sometimes|string|max:50|min:1',
             'email' => 'sometimes|email|unique:users,email,' . $authenticatedUser->id,
             'password' => 'sometimes|string|min:8'
         ]);
-        $data = $this->authService->updateAkun($request, $validated);
 
-        return response()->json($data);
+        // [FIX] Gunakan sendResponse
+        return $this->sendResponse(
+            $this->authService->updateAkun($request, $validated)
+        );
     }
 }
-

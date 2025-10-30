@@ -22,7 +22,7 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tgl_order' => 'required|date',
+            'tgl_order' => 'required|date_format:Y-m-d',
             'no_order' => 'required|string|unique:orders,no_order',
             'id_vendor' => 'required|exists:vendors,id_vendor',
             'id_item' => 'required|exists:items,id_item',

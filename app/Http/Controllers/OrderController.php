@@ -24,10 +24,22 @@ class OrderController extends ApiController
     }
 
     /**
-     * Menampilkan semua data order
-     * * Mengambil daftar semua transaksi order yang terdaftar.
+     * Get Semua Order
      *
      * @authenticated
+     * @response 200 {
+     * "success": true,
+     * "message": "Data ditemukan",
+     * "data": [
+     * {
+     * "id_order": 1,
+     * "tgl_order": "2025-10-30",
+     * "no_order": "ORD0001",
+     * "id_vendor": 1,
+     * "id_item": 1
+     * }
+     * ]
+     * }
      */
     public function index()
     {
@@ -37,8 +49,7 @@ class OrderController extends ApiController
     }
 
     /**
-     * Menampilkan detail order
-     * * Mengambil data satu order berdasarkan ID.
+     * Get Detail Order
      *
      * @authenticated
      * @urlParam id required ID dari order. Example: 1
@@ -50,11 +61,26 @@ class OrderController extends ApiController
     }
 
     /**
-     * Membuat data order baru
-     * * Menyimpan transaksi order baru.
-     * * (Validasi `id_item` vs `id_vendor` ditangani di `StoreOrderRequest`).
+     * Buat Order Baru
      *
      * @authenticated
+     * @response 201 {
+     * "success": true,
+     * "message": "Order berhasil dibuat",
+     * "data": {
+     * "id_order": 1,
+     * "tgl_order": "2025-10-30",
+     * "no_order": "ORD0001",
+     * "id_vendor": 1,
+     * "id_item": 1
+     * }
+     * }
+     * @response 422 {
+     * "message": "The tgl_order field must match the format Y-m-d.",
+     * "errors": {
+     * "tgl_order": ["The tgl_order field must match the format Y-m-d."]
+     * }
+     * }
      */
     public function store(StoreOrderRequest $request)
     {
@@ -64,8 +90,7 @@ class OrderController extends ApiController
     }
 
     /**
-     * Memperbarui data order
-     * * Memperbarui data order yang ada berdasarkan ID.
+     * Update Order
      *
      * @authenticated
      * @urlParam id required ID dari order. Example: 1
@@ -78,8 +103,7 @@ class OrderController extends ApiController
     }
 
     /**
-     * Menghapus data order
-     * * Menghapus data order berdasarkan ID.
+     * Hapus Order
      *
      * @authenticated
      * @urlParam id required ID dari order. Example: 1

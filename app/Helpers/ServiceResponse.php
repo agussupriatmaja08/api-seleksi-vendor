@@ -36,13 +36,4 @@ class ServiceResponse
         return new self($status = false, $message, $data, $statusCode);
     }
 
-    protected function sendResponse(ServiceResponse $result)
-    {
-
-        return response()->json([
-            'status' => $result->status,
-            'message' => $result->message,
-            'data' => $result->data,
-        ], $result->statusCode);
-    }
 }

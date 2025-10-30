@@ -12,8 +12,7 @@ use App\Http\Controllers\Response\ApiController;
 /**
  * @group VendorItem
  *
- * API untuk mengelola relasi dan harga item per vendor.
- * (Mengelola tabel 'vendor_items')
+ * API untuk mengelola harga item per vendor.
  */
 class VendorItemController extends ApiController
 {
@@ -25,15 +24,20 @@ class VendorItemController extends ApiController
     }
 
     /**
-     * Menampilkan semua relasi harga vendor-item
-     * * Mengambil daftar semua penawaran item dan harganya.
+     * Get Semua Item Vendor
      *
      * @authenticated
      * @response 200 {
      *  "success": true,
-     *  "message": "Daftar vendor item berhasil diambil",
+     *  "message": "Data ditemukan",
      *  "data": [
-     *    {"id":1,"item_id":1,"id_vendor":1,"harga_sebelum":"10000.00","harga_sekarang":"9000.00"}
+     *    {
+     *      "id": 1,
+     *      "id_vendor": 1,
+     *      "id_item": 1,
+     *      "harga_sebelum": "10000.00",
+     *      "harga_sekarang": "9000.00"
+     *    }
      *  ]
      * }
      */
@@ -45,20 +49,10 @@ class VendorItemController extends ApiController
     }
 
     /**
-     * Menampilkan detail relasi harga
-     * * Mengambil detail satu penawaran (harga) berdasarkan ID relasi.
+     * Get Detail Item Vendor
      *
      * @authenticated
-     * @urlParam id required ID dari relasi vendor-item. Example: 1
-     * @response 200 {
-     *  "success": true,
-     *  "message": "Detail vendor item diperoleh",
-     *  "data": {"id":1,"item_id":1,"id_vendor":1,"harga_sebelum":"10000.00","harga_sekarang":"9000.00"}
-     * }
-     * @response 404 {
-     *  "success": false,
-     *  "message": "Relasi vendor-item tidak ditemukan"
-     * }
+     * @urlParam id required ID dari harga item. Example: 1
      */
     public function show($id)
     {
@@ -68,9 +62,7 @@ class VendorItemController extends ApiController
     }
 
     /**
-     * Membuat relasi harga vendor-item baru
-     * * Mendaftarkan item ke vendor beserta harga awalnya.
-     *
+     * Buat Item Vendor
      * @authenticated
      * @response 201 {
      *  "success": true,
@@ -91,9 +83,7 @@ class VendorItemController extends ApiController
     }
 
     /**
-     * Memperbarui relasi harga vendor-item
-     * * Endpoint kunci untuk memperbarui harga (harga_sebelum & harga_sekarang).
-     *
+     * Update Vendor Item
      * @authenticated
      * @urlParam id required ID dari relasi vendor-item. Example: 1
      * @response 200 {
@@ -114,8 +104,7 @@ class VendorItemController extends ApiController
     }
 
     /**
-     * Menghapus relasi harga vendor-item
-     * * Menghapus penawaran item dari vendor.
+     * Hapus Vendor Item
      *
      * @authenticated
      * @urlParam id required ID dari relasi vendor-item. Example: 1

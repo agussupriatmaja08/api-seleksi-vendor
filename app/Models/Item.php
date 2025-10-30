@@ -19,4 +19,9 @@ class Item extends Model
     {
         return $this->hasMany(VendorItem::class, 'id_item', 'id_item');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'id_item', 'id_item');
+    }
 }
