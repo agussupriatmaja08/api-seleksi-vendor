@@ -53,7 +53,7 @@ class OrderService implements OrderInterface
             return ServiceResponse::error('Order tidak ditemukan', 404);
         }
         $order->delete();
-        return ServiceResponse::success($order, 'Order berhasil dihapus', 200);
+        return ServiceResponse::success(null, 'Order berhasil dihapus', 200);
     }
 
 }

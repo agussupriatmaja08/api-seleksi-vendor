@@ -110,7 +110,7 @@ http://127.0.0.1:8000/docs/api
 Atau anda juga dapat mengakses dokumentasi API lewat Postman :
 
 ```
-https://documenter.getpostman.com/view/27895963/2sB3Wnwh8b#4b00c237-c45f-4102-9258-3f050e92a814
+https://documenter.getpostman.com/view/27895963/2sB3Wnwh8b#87c48442-8a36-40cc-a3b3-2b43cc6f0fe3
 ```
 
 ---
