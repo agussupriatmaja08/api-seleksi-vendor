@@ -20,8 +20,8 @@ class AuthService implements AuthInterface
 
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            $error = ServiceResponse::error('Unauthorized. Email atau password salah.', 401);
-            return response()->json($error);
+            return ServiceResponse::error('Unauthorized. Email atau password salah.', 401);
+            // return response()->json($error);
         }
         $data = [
             'access_token' => $token,

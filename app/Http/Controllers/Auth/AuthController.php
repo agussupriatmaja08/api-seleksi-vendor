@@ -68,25 +68,13 @@ class AuthController extends ApiController
     public function login(Request $request)
     {
         try {
-            $credentials = $request->validate([ // Validasi bisa melempar exception
+            $request->validate([
                 'email' => 'required',
                 'password' => 'required',
             ]);
 
-            // [FIX] Panggil service, yang akan mengembalikan ServiceResponse
             $result = $this->authService->login($request);
-
-            // [FIX] Gunakan sendResponse dari ApiController
             return $this->sendResponse($result);
-
-        } catch (ValidationException $e) {
-            // [FIX] Gunakan ServiceResponse dan sendResponse untuk error
-            $errorResponse = ServiceResponse::error('Data validasi tidak valid.', 422, $e->errors());
-            return $this->sendResponse($errorResponse);
-
-        } catch (JWTException $e) {
-            $errorResponse = ServiceResponse::error('Gagal membuat token.', 500);
-            return $this->sendResponse($errorResponse);
 
         } catch (Exception $e) {
             $errorResponse = ServiceResponse::error('Terjadi kesalahan: ' . $e->getMessage(), 500);
@@ -116,14 +104,12 @@ class AuthController extends ApiController
      */
     public function register(Request $request)
     {
-        // [NOTE] Handler.php akan menangani ValidationException secara otomatis
         $validated = $request->validate([
             'name' => 'required|max:50|min:1',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8'
         ]);
 
-        // [FIX] Gunakan sendResponse
         return $this->sendResponse(
             $this->authService->register($validated)
         );
@@ -146,7 +132,6 @@ class AuthController extends ApiController
      */
     public function updateAkun(Request $request)
     {
-        // [NOTE] Handler.php akan menangani ValidationException secara otomatis
 
         $targetUserId = $request->route('user');
         $authenticatedUser = $request->user();
@@ -163,7 +148,6 @@ class AuthController extends ApiController
             'password' => 'sometimes|string|min:8'
         ]);
 
-        // [FIX] Gunakan sendResponse
         return $this->sendResponse(
             $this->authService->updateAkun($request, $validated)
         );
