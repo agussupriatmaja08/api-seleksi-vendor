@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
 class LoginRequest extends FormRequest
 {
@@ -33,6 +35,22 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Custom messages 
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email harus diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password harus diisi.',
+            'password.string' => 'Password harus berupa teks.',
+        ];
+    }
+
+    /**
      * Attempt to authenticate the request's credentials.
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -41,7 +59,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (!Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -59,7 +77,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -80,6 +98,31 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('email')) . '|' . $this->ip());
+    }
+
+    /**
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $result = (object) [
+            'status' => false,
+            'message' => 'Validation failed',
+            'data' => $validator->errors(),
+            'statusCode' => 422
+        ];
+
+        throw new HttpResponseException(
+            response()->json([
+                'status' => $result->status,
+                'message' => $result->message,
+                'data' => $result->data,
+            ], $result->statusCode)
+        );
     }
 }

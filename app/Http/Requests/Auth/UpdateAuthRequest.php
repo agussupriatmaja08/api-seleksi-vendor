@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-
-class StoreOrderRequest extends FormRequest
+class UpdateAuthRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +24,10 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tgl_order' => 'required|date_format:Y-m-d',
-            'no_order' => 'required|string|unique:orders,no_order',
-            'id_vendor' => 'required|exists:vendors,id_vendor',
-            'id_item' => 'required|exists:items,id_item',
+
+            'name' => 'sometimes|string|max:50|min:1',
+            'email' => 'sometimes|email|unique:users,email,' . $this->route('user') . ',id',
+            'password' => 'sometimes|string|min:8'
             //
         ];
     }
@@ -41,18 +40,15 @@ class StoreOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'tgl_order.required' => 'Tanggal order harus diisi.',
-            'tgl_order.date_format' => 'Format tanggal harus Y-m-d (YYYY-MM-DD).',
-            'no_order.required' => 'Nomor order harus diisi.',
-            'no_order.string' => 'Nomor order harus berupa teks.',
-            'no_order.unique' => 'Nomor order sudah terdaftar.',
-            'id_vendor.required' => 'ID vendor harus diisi.',
-            'id_vendor.exists' => 'Vendor yang dipilih tidak ditemukan.',
-            'id_item.required' => 'ID item harus diisi.',
-            'id_item.exists' => 'Item yang dipilih tidak ditemukan.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal :max karakter.',
+            'name.min' => 'Nama minimal :min karakter.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.string' => 'Password harus berupa teks.',
+            'password.min' => 'Password minimal :min karakter.',
         ];
     }
-
     /**
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator

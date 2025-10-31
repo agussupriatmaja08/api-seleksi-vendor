@@ -13,6 +13,9 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\QueryException;
 use App\Services\Contracts\AuthInterface;
+use App\Http\Requests\Auth\StoreAuthRequest;
+use App\Http\Requests\Auth\UpdateAuthRequest;
+use App\Http\Requests\Auth\LoginRequest;
 
 /**
  * @group Autentikasi
@@ -65,14 +68,9 @@ class AuthController extends ApiController
      *     "message": "Gagal membuat token."
      * }
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         try {
-            $request->validate([
-                'email' => 'required',
-                'password' => 'required',
-            ]);
-
             $result = $this->authService->login($request);
             return $this->sendResponse($result);
 
@@ -102,16 +100,11 @@ class AuthController extends ApiController
      * }
      * }
      */
-    public function register(Request $request)
+    public function register(StoreAuthRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:50|min:1',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8'
-        ]);
 
         return $this->sendResponse(
-            $this->authService->register($validated)
+            $this->authService->register($request->validated())
         );
     }
 
@@ -130,7 +123,7 @@ class AuthController extends ApiController
      * "message": "Akses Ditolak (Forbidden). Anda hanya dapat memperbarui akun Anda sendiri."
      * }
      */
-    public function updateAkun(Request $request)
+    public function updateAkun(UpdateAuthRequest $request)
     {
 
         $targetUserId = $request->route('user');
@@ -142,14 +135,10 @@ class AuthController extends ApiController
             );
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:50|min:1',
-            'email' => 'sometimes|email|unique:users,email,' . $authenticatedUser->id,
-            'password' => 'sometimes|string|min:8'
-        ]);
+
 
         return $this->sendResponse(
-            $this->authService->updateAkun($request, $validated)
+            $this->authService->updateAkun($request->validated(), $authenticatedUser)
         );
     }
 }

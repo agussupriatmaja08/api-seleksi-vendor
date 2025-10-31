@@ -32,25 +32,22 @@ class AuthService implements AuthInterface
 
 
     }
-    public function register(array $validated)
+    public function register($data)
     {
         $userData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password'])
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password'])
         ];
 
         User::create($userData);
         return ServiceResponse::success(null, 'User berhasil dibuat', 201);
 
     }
-    public function updateAkun(Request $request, array $validated)
+    public function updateAkun($data, User $user)
     {
-
-        $user = $request->user();
-
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($validated['password']);
+        if ($data['password']) {
+            $validated['password'] = Hash::make($data['password']);
         } else {
             unset($validated['password']);
         }
